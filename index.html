@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Head Out of the Boat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sea-deep:#063b63;
+    --sea:#0d6ea8;
+    --sea-light:#39a7d6;
+    --sky:#bfe9ff;
+    --sun:#ffd23f;
+    --coral:#ff6b57;
+    --foam:#fdfcf7;
+    --sand:#fff4d6;
+    --green:#39c47e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:'Nunito',sans-serif;
+    color:var(--foam);
+    background:var(--sea-deep);
+    overflow:hidden;
+  }
+  .deck{
+    height:100vh;
+    overflow-y:scroll;
+    scroll-snap-type:y mandatory;
+    scroll-behavior:smooth;
+  }
+  .deck::-webkit-scrollbar{width:0;}
+  .slide{
+    position:relative;
+    height:100vh;
+    width:100vw;
+    scroll-snap-align:start;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:6vh 6vw;
+    overflow:hidden;
+  }
+  h1{font-family:'Fredoka',sans-serif;font-weight:700;line-height:1.05;}
+  h2{font-family:'Fredoka',sans-serif;font-weight:600;line-height:1.1;}
+  .eyebrow{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:clamp(.7rem,1.6vw,1rem);
+    opacity:.85;
+    margin-bottom:1.2rem;
+  }
+  .sub{
+    font-weight:700;
+    font-size:clamp(1rem,2.6vw,1.5rem);
+    max-width:820px;
+    opacity:.95;
+    margin-top:1.4rem;
+    line-height:1.4;
+  }
+  strong{color:var(--sun);}
+  .hint{
+    position:absolute;bottom:3.2vh;left:0;right:0;
+    text-align:center;font-family:'Fredoka',sans-serif;font-weight:500;
+    font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;
+    animation:bob 1.8s ease-in-out infinite;
+  }
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(7px);}}
+
+  /* ---------- palettes per slide ---------- */
+  .s-sky{background:linear-gradient(180deg,#7ecbf0 0%,#39a7d6 55%,#0d6ea8 100%);}
+  .s-deep{background:linear-gradient(180deg,#0d6ea8 0%,#063b63 100%);}
+  .s-dusk{background:linear-gradient(180deg,#1b5e8c 0%,#063b63 100%);}
+  .s-sun{background:linear-gradient(180deg,#ffd23f 0%,#ffb03f 100%);color:#063b63;}
+  .s-sun .eyebrow,.s-sun .hint{opacity:.7;}
+  .s-sun strong{color:var(--coral);}
+  .s-green{background:linear-gradient(180deg,#2fae6f 0%,#0d7a4d 100%);}
+
+  /* animated water band bottom */
+  .waves{position:absolute;left:0;right:0;bottom:0;height:16vh;overflow:hidden;pointer-events:none;}
+  .waves svg{position:absolute;bottom:0;width:200%;height:100%;}
+  .wave1{fill:rgba(255,255,255,.14);animation:drift 9s linear infinite;}
+  .wave2{fill:rgba(255,255,255,.10);animation:drift 6s linear infinite reverse;}
+  @keyframes drift{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* clouds */
+  .cloud{position:absolute;background:rgba(255,255,255,.55);border-radius:50px;filter:blur(1px);}
+  .cloud::before,.cloud::after{content:"";position:absolute;background:inherit;border-radius:50%;}
+  .cd1{width:120px;height:34px;top:12%;left:-160px;animation:cross 26s linear infinite;}
+  .cd1::before{width:56px;height:56px;top:-24px;left:20px;}
+  .cd1::after{width:40px;height:40px;top:-16px;left:64px;}
+  .cd2{width:90px;height:26px;top:22%;left:-160px;animation:cross 34s linear infinite;animation-delay:-8s;}
+  .cd2::before{width:44px;height:44px;top:-18px;left:14px;}
+  .cd2::after{width:30px;height:30px;top:-10px;left:50px;}
+  @keyframes cross{from{transform:translateX(0);}to{transform:translateX(115vw);}}
+
+  /* ---------- generic boat glyph ---------- */
+  .boat{display:inline-block;}
+  .sailing{animation:sailBob 2.6s ease-in-out infinite;}
+  @keyframes sailBob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-8px) rotate(2deg);}}
+  .ico-svg{display:block;margin:0 auto .55rem;}
+  .rotor{transform-box:fill-box;transform-origin:center;animation:rspin .2s linear infinite;}
+  @keyframes rspin{to{transform:rotate(360deg);}}
+
+  /* slide 1 hero boat crossing */
+  .hero-boat{position:absolute;bottom:16vh;left:-140px;animation:sailAcross 12s linear infinite;}
+  @keyframes sailAcross{from{transform:translateX(0);}to{transform:translateX(115vw);}}
+
+  /* wind arrows */
+  .windset{position:absolute;inset:0;pointer-events:none;}
+  .warr{position:absolute;height:4px;background:rgba(255,255,255,.7);border-radius:4px;animation:gust 3.4s ease-in-out infinite;}
+  .warr::after{content:"";position:absolute;right:-2px;top:-4px;border-left:10px solid rgba(255,255,255,.7);border-top:6px solid transparent;border-bottom:6px solid transparent;}
+  @keyframes gust{0%{opacity:0;transform:translateX(-30px);}30%{opacity:1;}70%{opacity:1;}100%{opacity:0;transform:translateX(60px);}}
+
+  /* ---------- content cards ---------- */
+  .row{display:flex;gap:clamp(1rem,3vw,2.4rem);flex-wrap:wrap;justify-content:center;align-items:stretch;margin-top:2rem;}
+  .card{
+    background:rgba(255,255,255,.12);
+    border:2px solid rgba(255,255,255,.25);
+    border-radius:22px;
+    padding:1.6rem 1.4rem;
+    width:min(230px,42vw);
+    backdrop-filter:blur(4px);
+  }
+  .card .ico{font-size:2.4rem;display:block;margin-bottom:.5rem;}
+  .card .t{font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.1rem;margin-bottom:.3rem;}
+  .card .d{font-size:.92rem;opacity:.9;line-height:1.35;}
+
+  /* ---------- slide 3 tunnel vision ---------- */
+  .stage{position:relative;width:min(620px,88vw);height:min(360px,46vh);margin-top:1.5rem;}
+  .goggle{
+    position:absolute;inset:0;border-radius:24px;
+    box-shadow:0 0 0 2000px rgba(3,25,45,.72);
+    background:transparent;
+  }
+  .tunnel{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:180px;height:180px;border-radius:50%;
+    box-shadow:0 0 0 2000px rgba(3,25,45,.82);
+    animation:pulse 3s ease-in-out infinite;
+    z-index:3;
+  }
+  @keyframes pulse{0%,100%{width:180px;height:180px;}50%{width:150px;height:150px;}}
+  .eyes-focus{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.4rem;z-index:4;}
+
+  /* ---------- drone / racecourse ---------- */
+  .course{
+    position:relative;width:min(560px,90vw);height:min(400px,50vh);
+    margin-top:1.4rem;border-radius:20px;overflow:hidden;
+    background:linear-gradient(160deg,#0a5f92,#063b63);
+    border:2px solid rgba(255,255,255,.22);
+  }
+  /* pressure side shading */
+  .pressure{position:absolute;top:0;bottom:0;width:50%;}
+  .pressure.more{left:0;background:linear-gradient(90deg,rgba(255,210,63,.28),rgba(255,210,63,0));}
+  .pressure.less{right:0;background:linear-gradient(270deg,rgba(3,25,45,.35),transparent);}
+  .plabel{position:absolute;top:10px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.85rem;padding:2px 10px;border-radius:20px;}
+  .plabel.more{left:12px;background:var(--sun);color:#063b63;}
+  .plabel.less{right:12px;background:rgba(255,255,255,.2);}
+  .ripple{position:absolute;height:3px;background:rgba(255,210,63,.55);border-radius:3px;}
+  .r1{width:34px;top:38%;left:6%;animation:rip 2.4s linear infinite;}
+  .r2{width:26px;top:58%;left:14%;animation:rip 2.4s linear infinite;animation-delay:-1s;}
+  .r3{width:30px;top:72%;left:4%;animation:rip 2.4s linear infinite;animation-delay:-1.6s;}
+  @keyframes rip{0%{opacity:0;transform:translateX(0);}30%{opacity:1;}100%{opacity:0;transform:translateX(38px);}}
+  .mark{position:absolute;top:12%;left:50%;transform:translateX(-50%);width:26px;height:26px;background:var(--coral);border-radius:50%;border:3px solid #fff;animation:markpulse 2s ease-in-out infinite;}
+  @keyframes markpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,87,.6);}50%{box-shadow:0 0 0 12px rgba(255,107,87,0);}}
+  .mtag{position:absolute;top:6%;left:50%;transform:translateX(-50%);font-family:'Fredoka',sans-serif;font-size:.75rem;font-weight:600;}
+  .fboat{position:absolute;font-size:1.6rem;}
+  .fb-smart{bottom:8%;left:18%;animation:goSmart 6s ease-in-out infinite;}
+  .fb-a{bottom:8%;left:60%;animation:goA 6s ease-in-out infinite;}
+  .fb-b{bottom:8%;left:74%;animation:goB 6s ease-in-out infinite;}
+  @keyframes goSmart{0%{transform:translate(0,0) rotate(-8deg);}100%{transform:translate(50px,-230px) rotate(-8deg);}}
+  @keyframes goA{0%{transform:translate(0,0) rotate(6deg);}100%{transform:translate(-30px,-140px) rotate(6deg);}}
+  @keyframes goB{0%{transform:translate(0,0) rotate(6deg);}100%{transform:translate(-46px,-120px) rotate(6deg);}}
+
+  /* slide 4: wind direction + 45deg beating boats */
+  .windflag{position:absolute;top:6px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:1px;z-index:5;animation:windbob 2.6s ease-in-out infinite;}
+  .windflag span{font-family:'Fredoka',sans-serif;font-weight:600;font-size:.68rem;letter-spacing:.16em;color:#fff;opacity:.9;}
+  @keyframes windbob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(4px);}}
+  .windflag.tl{left:auto;right:14px;transform:none;animation:windbobTL 2.6s ease-in-out infinite;}
+  @keyframes windbobTL{0%,100%{transform:translateY(0);}50%{transform:translateY(4px);}}
+  .gust{position:absolute;top:46px;width:3px;border-radius:3px;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,210,63,.65));animation:fall 2.6s linear infinite;pointer-events:none;}
+  @keyframes fall{0%{transform:translateY(0);opacity:0;}18%{opacity:1;}100%{transform:translateY(290px);opacity:0;}}
+  .tboat{position:absolute;bottom:12%;z-index:4;}
+  .rot-left{transform:rotate(-45deg);}
+  .rot-right{transform:rotate(45deg);}
+  .tb-win{left:42%;animation:beatWin 7s ease-in-out infinite;}
+  .tb-mid{left:54%;animation:beatMid 7s ease-in-out infinite;}
+  .tb-lag{left:62%;animation:beatLag 7s ease-in-out infinite;}
+  @keyframes beatWin{0%{transform:translate(0,0);opacity:0;}12%{opacity:1;}82%{opacity:1;}100%{transform:translate(-150px,-150px);opacity:0;}}
+  @keyframes beatMid{0%{transform:translate(0,0);opacity:0;}12%{opacity:1;}82%{opacity:1;}100%{transform:translate(80px,-80px);opacity:0;}}
+  @keyframes beatLag{0%{transform:translate(0,0);opacity:0;}12%{opacity:1;}82%{opacity:1;}100%{transform:translate(62px,-62px);opacity:0;}}
+  .lead-tag{position:absolute;top:-18px;left:50%;transform:translateX(-50%);background:var(--green);color:#063b63;font-family:'Fredoka',sans-serif;font-weight:700;font-size:.6rem;padding:1px 7px;border-radius:10px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.25);}
+
+  /* slide 5: fleet split */
+  .startline{position:absolute;bottom:11%;left:9%;right:9%;border-top:2px dashed rgba(255,255,255,.55);}
+  .startpin{position:absolute;bottom:calc(11% - 5px);width:9px;height:9px;border-radius:50%;background:#ff6b57;border:1.5px solid #fff;}
+  .sb{position:absolute;bottom:13%;z-index:4;}
+  @keyframes splitL1{0%{transform:translate(0,0);opacity:0;}14%{opacity:1;}84%{opacity:1;}100%{transform:translate(-120px,-152px);opacity:0;}}
+  @keyframes splitL2{0%{transform:translate(0,0);opacity:0;}14%{opacity:1;}84%{opacity:1;}100%{transform:translate(-150px,-138px);opacity:0;}}
+  @keyframes splitL3{0%{transform:translate(0,0);opacity:0;}14%{opacity:1;}84%{opacity:1;}100%{transform:translate(-92px,-166px);opacity:0;}}
+  @keyframes splitR1{0%{transform:translate(0,0);opacity:0;}14%{opacity:1;}84%{opacity:1;}100%{transform:translate(108px,-118px);opacity:0;}}
+  @keyframes splitR2{0%{transform:translate(0,0);opacity:0;}14%{opacity:1;}84%{opacity:1;}100%{transform:translate(138px,-96px);opacity:0;}}
+  .count-tag{position:absolute;font-family:'Fredoka',sans-serif;font-weight:700;font-size:.8rem;padding:3px 11px;border-radius:20px;top:44%;}
+  .count-tag.big{left:8%;background:var(--sun);color:#063b63;}
+  .count-tag.small{right:8%;background:rgba(255,255,255,.18);}
+
+  /* clean air slide */
+  .badair{position:absolute;top:20%;left:36%;width:28%;height:56%;background:rgba(150,158,166,.32);clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);}
+  .turb{position:absolute;height:3px;width:22px;background:rgba(210,214,218,.7);border-radius:3px;animation:wobble 1.6s ease-in-out infinite;}
+  @keyframes wobble{0%,100%{transform:translateX(-6px);opacity:.4;}50%{transform:translateX(6px);opacity:.9;}}
+  .airtag{position:absolute;font-family:'Fredoka',sans-serif;font-weight:700;font-size:.72rem;padding:2px 9px;border-radius:14px;white-space:nowrap;}
+  .airtag.bad{background:var(--coral);color:#fff;}
+  .airtag.good{background:var(--green);color:#063b63;}
+  .airboat{position:absolute;z-index:4;}
+  .stuck{top:56%;left:47%;animation:struggle 2.4s ease-in-out infinite;}
+  @keyframes struggle{0%,100%{transform:translate(0,0) rotate(-3deg);}50%{transform:translate(0,4px) rotate(3deg);}}
+  .clean{top:52%;right:12%;animation:climbClean 5s ease-in-out infinite;}
+  @keyframes climbClean{0%{transform:translate(0,0);opacity:0;}14%{opacity:1;}84%{opacity:1;}100%{transform:translate(0,-150px);opacity:0;}}
+
+  /* scan eye slide */
+  .scanwrap{position:relative;width:min(340px,70vw);height:min(340px,42vh);margin-top:1rem;}
+  .scan-boat{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3rem;z-index:2;}
+  .scan-eye{position:absolute;top:50%;left:50%;width:14px;height:14px;background:var(--sun);border-radius:50%;transform-origin:0 0;box-shadow:0 0 12px var(--sun);animation:sweep 5s linear infinite;}
+  @keyframes sweep{0%{transform:rotate(0deg) translateX(120px);}100%{transform:rotate(360deg) translateX(120px);}}
+  .scan-tag{position:absolute;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;background:rgba(255,255,255,.14);padding:4px 10px;border-radius:20px;}
+  .st-front{top:2%;left:50%;transform:translateX(-50%);}
+  .st-right{top:46%;right:-6%;}
+  .st-behind{bottom:2%;left:50%;transform:translateX(-50%);}
+  .st-left{top:46%;left:-6%;}
+
+  /* loop slide */
+  .loop{position:relative;width:min(360px,78vw);height:min(360px,44vh);margin-top:1rem;}
+  .loop-node{
+    position:absolute;width:120px;height:120px;border-radius:50%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:'Fredoka',sans-serif;font-weight:600;text-align:center;
+    background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.3);
+    animation:glow 4s ease-in-out infinite;
+  }
+  .loop-node .li{font-size:1.7rem;}
+  .loop-node .ln{font-size:1rem;}
+  .ln-top{top:0;left:50%;transform:translateX(-50%);animation-delay:0s;}
+  .ln-right{top:50%;right:0;transform:translateY(-50%);animation-delay:1s;}
+  .ln-bottom{bottom:0;left:50%;transform:translateX(-50%);animation-delay:2s;}
+  .ln-left{top:50%;left:0;transform:translateY(-50%);animation-delay:3s;}
+  @keyframes glow{0%,100%{background:rgba(255,255,255,.12);transform:scale(1) translateX(var(--tx,0)) translateY(var(--ty,0));}
+    25%{background:rgba(255,210,63,.35);}}
+  .ln-top{--tx:-50%;}.ln-bottom{--tx:-50%;}.ln-right{--ty:-50%;}.ln-left{--ty:-50%;}
+  .loop-arrow{position:absolute;top:50%;left:50%;width:150px;height:150px;transform:translate(-50%,-50%);}
+  .loop-arrow circle{fill:none;stroke:rgba(255,255,255,.4);stroke-width:3;stroke-dasharray:8 10;animation:spin 12s linear infinite;transform-origin:center;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* mantra slide */
+  .mantra{font-family:'Fredoka',sans-serif;font-weight:700;font-size:clamp(2.2rem,8vw,5rem);line-height:1;}
+  .mantra span{display:inline-block;animation:pop 2.4s ease-in-out infinite;}
+  .mantra span:nth-child(2){animation-delay:.3s;}
+  .mantra span:nth-child(3){animation-delay:.6s;}
+  @keyframes pop{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.06);}}
+
+  /* checklist */
+  .check{display:flex;flex-direction:column;gap:.7rem;margin-top:1.6rem;width:min(560px,90vw);}
+  .check .item{
+    display:flex;align-items:center;gap:.9rem;text-align:left;
+    background:rgba(255,255,255,.1);border-radius:16px;padding:.8rem 1.1rem;
+    border:2px solid rgba(255,255,255,.2);font-weight:700;
+    animation:slidein .6s ease both;
+  }
+  .check .item .n{background:var(--sun);color:#063b63;font-family:'Fredoka',sans-serif;font-weight:700;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .check .item:nth-child(1){animation-delay:.1s;}
+  .check .item:nth-child(2){animation-delay:.25s;}
+  .check .item:nth-child(3){animation-delay:.4s;}
+  .check .item:nth-child(4){animation-delay:.55s;}
+  @keyframes slidein{from{opacity:0;transform:translateX(-24px);}to{opacity:1;transform:none;}}
+
+  /* football pitch */
+  .pitch{position:relative;width:min(420px,84vw);height:min(240px,32vh);margin-top:1.4rem;background:linear-gradient(180deg,#37b76b,#2a9457);border-radius:16px;border:2px solid rgba(255,255,255,.3);overflow:hidden;}
+  .pitch .line{position:absolute;background:rgba(255,255,255,.5);}
+  .pitch .mid{top:0;bottom:0;left:50%;width:2px;}
+  .pitch .circle{top:50%;left:50%;width:70px;height:70px;transform:translate(-50%,-50%);border:2px solid rgba(255,255,255,.5);border-radius:50%;background:transparent;}
+  .ball{position:absolute;top:50%;left:20%;font-size:1.4rem;animation:passball 4s ease-in-out infinite;}
+  @keyframes passball{0%{left:20%;top:50%;}50%{left:70%;top:30%;}100%{left:20%;top:50%;}}
+  .player{position:absolute;font-size:1.6rem;}
+  .p1{bottom:12%;left:16%;}.p2{top:14%;left:62%;animation:cheer 1.6s ease-in-out infinite;}
+  @keyframes cheer{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+  @media(max-width:520px){
+    .card{width:min(150px,44vw);padding:1.1rem .9rem;}
+    .card .ico{font-size:1.9rem;}
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 1. HOOK -->
+  <section class="slide s-sky">
+    <div class="cloud cd1"></div>
+    <div class="cloud cd2"></div>
+    <div class="windset">
+      <div class="warr" style="top:30%;left:10%;width:80px;"></div>
+      <div class="warr" style="top:44%;left:20%;width:60px;animation-delay:.8s;"></div>
+      <div class="warr" style="top:38%;left:40%;width:70px;animation-delay:1.6s;"></div>
+    </div>
+    <div class="eyebrow">Sailing smarter · Optimist racing</div>
+    <h1 style="font-size:clamp(2.4rem,8vw,5.2rem);color:#063b63;">Get your head<br>out of the boat</h1>
+    <p class="sub" style="color:#083f66;">Don't just sail your boat. Sail the whole <strong style="color:#ff6b57;">racecourse</strong>.</p>
+    <div class="hero-boat boat">
+      <svg width="120" height="110" viewBox="0 0 120 110">
+        <path d="M55 8 L58 78 L20 78 Z" fill="#fdfcf7"/>
+        <path d="M62 20 L62 78 L96 78 Z" fill="#ffd23f"/>
+        <rect x="56" y="8" width="4" height="72" fill="#5a3d20"/>
+        <path d="M8 82 Q60 100 112 82 L104 96 Q60 108 16 96 Z" fill="#ff6b57"/>
+      </svg>
+    </div>
+    <div class="waves"><svg viewBox="0 0 1200 120" preserveAspectRatio="none"><path class="wave1" d="M0,40 C150,90 350,0 600,40 C850,80 1050,10 1200,40 L1200,120 L0,120 Z"/></svg><svg viewBox="0 0 1200 120" preserveAspectRatio="none" style="left:-25%;"><path class="wave2" d="M0,50 C200,10 400,90 600,50 C800,10 1000,90 1200,50 L1200,120 L0,120 Z"/></svg></div>
+    <div class="hint" style="color:#063b63;">Scroll to sail ↓</div>
+  </section>
+
+  <!-- 2. BIG IDEA -->
+  <section class="slide s-deep">
+    <div class="eyebrow">The big idea</div>
+    <h2 style="font-size:clamp(1.8rem,5.5vw,3.2rem);">You're the <strong>driver</strong>.<br>Be the <strong>drone</strong> too.</h2>
+    <div class="row">
+      <div class="card">
+        <svg class="ico-svg sailing" viewBox="0 0 100 100" width="72" height="72" role="img" aria-label="Optimist dinghy">
+          <path d="M34 16 L73 27 L71 64 L34 66 Z" fill="#fdfcf7" stroke="#d8d2c4" stroke-width="1.2"/>
+          <text x="51" y="53" font-family="Fredoka, sans-serif" font-size="16" font-weight="700" fill="#ff6b57" text-anchor="middle">1</text>
+          <line x1="35" y1="58" x2="73" y2="27" stroke="#b98a4a" stroke-width="1.4"/>
+          <line x1="34" y1="12" x2="34" y2="70" stroke="#6b4a26" stroke-width="2.4" stroke-linecap="round"/>
+          <line x1="34" y1="66" x2="71" y2="64" stroke="#6b4a26" stroke-width="2" stroke-linecap="round"/>
+          <path d="M13 70 L11 71 L14 83 Q50 91 86 83 L89 71 L87 70 Z" fill="#ffd23f" stroke="#e0a92f" stroke-width="1.2"/>
+          <path d="M12 74 Q50 82 88 74" fill="none" stroke="#ff6b57" stroke-width="2.4"/>
+        </svg>
+        <div class="t">The Driver</div>
+        <div class="d">Down low in the boat. You feel the speed and steer — but you only see what's right next to you.</div>
+      </div>
+      <div class="card" style="border-color:var(--sun);">
+        <svg class="ico-svg" viewBox="0 0 100 100" width="74" height="74" role="img" aria-label="Quadcopter drone">
+          <g stroke="#2f3a47" stroke-width="5" stroke-linecap="round">
+            <line x1="50" y1="52" x2="24" y2="34"/><line x1="50" y1="52" x2="76" y2="34"/>
+            <line x1="50" y1="52" x2="24" y2="70"/><line x1="50" y1="52" x2="76" y2="70"/>
+          </g>
+          <g fill="#39a7d6" opacity="0.22">
+            <ellipse cx="24" cy="34" rx="15" ry="4"/><ellipse cx="76" cy="34" rx="15" ry="4"/>
+            <ellipse cx="24" cy="70" rx="15" ry="4"/><ellipse cx="76" cy="70" rx="15" ry="4"/>
+          </g>
+          <g fill="#1f2833">
+            <circle cx="24" cy="34" r="4.5"/><circle cx="76" cy="34" r="4.5"/>
+            <circle cx="24" cy="70" r="4.5"/><circle cx="76" cy="70" r="4.5"/>
+          </g>
+          <ellipse class="rotor" cx="24" cy="34" rx="15" ry="2.4" fill="#0d6ea8"/>
+          <ellipse class="rotor" cx="76" cy="34" rx="15" ry="2.4" fill="#0d6ea8" style="animation-delay:-.05s"/>
+          <ellipse class="rotor" cx="24" cy="70" rx="15" ry="2.4" fill="#0d6ea8" style="animation-delay:-.1s"/>
+          <ellipse class="rotor" cx="76" cy="70" rx="15" ry="2.4" fill="#0d6ea8" style="animation-delay:-.03s"/>
+          <rect x="39" y="44" width="22" height="16" rx="6" fill="#3a4654" stroke="#2f3a47" stroke-width="1.5"/>
+          <circle cx="44" cy="52" r="2" fill="#ffd23f"/>
+          <circle cx="50" cy="62" r="5.5" fill="#2f3a47"/>
+          <circle cx="50" cy="63" r="2.4" fill="#39a7d6"/>
+        </svg>
+        <div class="t">The Drone</div>
+        <div class="d">High above the course. You see the wind, the fleet, the mark — the whole game at once.</div>
+      </div>
+    </div>
+    <p class="sub">The best sailors are <strong>both</strong> at the same time.</p>
+    <div class="hint">↓</div>
+  </section>
+
+  <!-- 3. INSIDE THE BOAT -->
+  <section class="slide s-dusk">
+    <div class="eyebrow">What you look at now</div>
+    <h2 style="font-size:clamp(1.6rem,5vw,2.8rem);">Inside the boat</h2>
+    <div class="stage">
+      <svg viewBox="0 0 600 380" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block;border-radius:20px;">
+        <defs>
+          <linearGradient id="povSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cdeeff"/><stop offset="1" stop-color="#9ed7f2"/></linearGradient>
+          <linearGradient id="povSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b8fc4"/><stop offset="1" stop-color="#0b5e92"/></linearGradient>
+          <linearGradient id="povSail" x1="0" y1="0" x2="1" y2="0.4"><stop offset="0" stop-color="#fdfcf7"/><stop offset="1" stop-color="#e4d8bd"/></linearGradient>
+          <radialGradient id="povVig" cx="0.42" cy="0.5" r="0.72"><stop offset="0.42" stop-color="#04223a" stop-opacity="0"/><stop offset="1" stop-color="#04223a" stop-opacity="0.9"/></radialGradient>
+        </defs>
+        <rect x="0" y="0" width="600" height="206" fill="url(#povSky)"/>
+        <rect x="0" y="206" width="600" height="174" fill="url(#povSea)"/>
+        <g opacity="0.5">
+          <path d="M54,120 L70,120 L62,95 Z" fill="#fff"/>
+          <rect x="51" y="120" width="20" height="6" rx="2" fill="#ffd23f"/>
+          <circle cx="548" cy="234" r="9" fill="#ff8a3d" stroke="#fff" stroke-width="1.5"/>
+          <path d="M120,58 Q150,50 180,58" stroke="#fff" stroke-width="2" fill="none"/>
+          <path d="M430,50 Q460,42 490,50" stroke="#fff" stroke-width="2" fill="none"/>
+        </g>
+        <g stroke="#bfe4f5" stroke-width="3" stroke-linecap="round">
+          <line x1="20" y1="232" x2="72" y2="232"><animate attributeName="opacity" values=".3;.8;.3" dur="2.2s" repeatCount="indefinite"/></line>
+          <line x1="40" y1="258" x2="96" y2="258"><animate attributeName="opacity" values=".3;.8;.3" dur="2.6s" begin="-1s" repeatCount="indefinite"/></line>
+        </g>
+        <path d="M172,60 L455,80 L432,252 L172,252 Z" fill="url(#povSail)" stroke="#d8cbb0" stroke-width="2"/>
+        <path d="M212,72 Q244,150 228,244" stroke="#e3d7bd" stroke-width="1.6" fill="none" opacity=".85"/>
+        <path d="M282,76 Q312,152 298,247" stroke="#e3d7bd" stroke-width="1.5" fill="none" opacity=".7"/>
+        <path d="M352,80 Q378,155 362,249" stroke="#e3d7bd" stroke-width="1.3" fill="none" opacity=".55"/>
+        <line x1="174" y1="205" x2="455" y2="82" stroke="#b98a4a" stroke-width="3"/>
+        <line x1="169" y1="338" x2="171" y2="46" stroke="#6b4a26" stroke-width="7" stroke-linecap="round"/>
+        <line x1="170" y1="252" x2="434" y2="252" stroke="#6b4a26" stroke-width="5" stroke-linecap="round"/>
+        <g transform="translate(196,116)"><g><path d="M0,0 Q11,-3 22,-1" stroke="#ff5a4d" stroke-width="2.6" fill="none" stroke-linecap="round"/><animateTransform attributeName="transform" type="rotate" values="-8;7;-8" dur="0.85s" repeatCount="indefinite"/></g></g>
+        <g transform="translate(196,168)"><g><path d="M0,0 Q11,-2 22,1" stroke="#39c47e" stroke-width="2.6" fill="none" stroke-linecap="round"/><animateTransform attributeName="transform" type="rotate" values="7;-8;7" dur="1.0s" repeatCount="indefinite"/></g></g>
+        <g transform="translate(196,214)"><g><path d="M0,0 Q11,-3 22,0" stroke="#ff5a4d" stroke-width="2.6" fill="none" stroke-linecap="round"/><animateTransform attributeName="transform" type="rotate" values="-6;9;-6" dur="0.95s" repeatCount="indefinite"/></g></g>
+        <path d="M0,380 L0,330 Q300,266 600,330 L600,380 Z" fill="#f2c53d"/>
+        <path d="M0,332 Q300,268 600,332" stroke="#d8a92f" stroke-width="4" fill="none"/>
+        <line x1="358" y1="252" x2="322" y2="342" stroke="#cdb488" stroke-width="3"/>
+        <path d="M296,356 q-4,-20 14,-24 q20,-4 30,8 q8,10 2,22 q-6,10 -22,8 q-18,-2 -24,-14 Z" fill="#e7b48a" stroke="#c98f66" stroke-width="1.5"/>
+        <rect x="0" y="0" width="600" height="380" fill="url(#povVig)"/>
+      </svg>
+    </div>
+    <p class="sub">Sail · telltales · mainsheet · bow. This <strong>matters</strong> — <span style="color:#ff6b57;font-weight:800;">but if it's <em>all</em> you see, you'll miss the racecourse.</span></p>
+    <div class="hint">↓</div>
+  </section>
+
+  <!-- 4. THE PROBLEM -->
+  <section class="slide s-deep">
+    <div class="eyebrow">Watch what happens</div>
+    <h2 style="font-size:clamp(1.6rem,5vw,2.6rem);">The <strong>tunnel-vision</strong> trap</h2>
+    <div class="course" style="height:min(360px,46vh);">
+      <div class="pressure more"></div>
+      <div class="pressure less"></div>
+      <div class="windflag">
+        <svg width="30" height="52" viewBox="0 0 30 52"><line x1="15" y1="4" x2="15" y2="38" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M5 34 L15 50 L25 34 Z" fill="#fff"/></svg>
+        <span>WIND</span>
+      </div>
+      <span class="gust" style="left:8%;height:34px;animation-delay:0s;"></span>
+      <span class="gust" style="left:15%;height:28px;animation-delay:-.6s;"></span>
+      <span class="gust" style="left:22%;height:40px;animation-delay:-1.2s;"></span>
+      <span class="gust" style="left:29%;height:26px;animation-delay:-1.8s;"></span>
+      <span class="gust" style="left:36%;height:32px;animation-delay:-.9s;"></span>
+      <span class="gust" style="left:78%;height:16px;opacity:.45;animation-duration:3.8s;animation-delay:-1s;"></span>
+      <span class="gust" style="left:88%;height:14px;opacity:.45;animation-duration:3.8s;animation-delay:-2.4s;"></span>
+      <div class="plabel more">More wind 🌬️🌬️🌬️</div>
+      <div class="plabel less">Less wind 🌬️</div>
+      <div class="tboat tb-win">
+        <span class="lead-tag">Ahead!</span>
+        <svg class="rot-left" width="30" height="40" viewBox="0 0 30 40" style="filter:drop-shadow(0 0 5px rgba(57,196,126,.9));">
+          <path d="M15 2 C21 12 21 28 15 38 C9 28 9 12 15 2 Z" fill="#eafff2" stroke="#39c47e" stroke-width="1.4"/>
+          <path d="M15 9 Q23 20 15 32" fill="none" stroke="#2fae6f" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="tboat tb-mid">
+        <svg class="rot-right" width="28" height="38" viewBox="0 0 30 40">
+          <path d="M15 2 C21 12 21 28 15 38 C9 28 9 12 15 2 Z" fill="#f2ede0" stroke="#c9c2b0" stroke-width="1.2"/>
+          <path d="M15 9 Q23 20 15 32" fill="none" stroke="#ff6b57" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="tboat tb-lag">
+        <svg class="rot-right" width="26" height="34" viewBox="0 0 30 40" style="opacity:.85;">
+          <path d="M15 2 C21 12 21 28 15 38 C9 28 9 12 15 2 Z" fill="#e7e1d2" stroke="#b3ad9c" stroke-width="1.2"/>
+          <path d="M15 9 Q23 20 15 32" fill="none" stroke="#8aa0b5" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <p class="sub">Head down in the boat, you never see the <strong>stronger wind</strong> — so the sailor who <strong>looks up</strong> finds it and pulls away. Your boat was fine; you just never looked. <strong>Drive like a drone:</strong> get your head up, see where the better wind is, and go there.</p>
+    <div class="hint">↓</div>
+  </section>
+
+  <!-- 5. THE FLEET SPLIT -->
+  <section class="slide s-dusk">
+    <div class="eyebrow">From above · right after the start</div>
+    <h2 style="font-size:clamp(1.6rem,5vw,2.6rem);">The fleet <strong>splits</strong></h2>
+    <div class="course">
+      <div class="pressure more"></div>
+      <div class="windflag tl">
+        <svg width="30" height="52" viewBox="0 0 30 52"><line x1="15" y1="4" x2="15" y2="38" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M5 34 L15 50 L25 34 Z" fill="#fff"/></svg>
+        <span>WIND</span>
+      </div>
+      <div class="mtag">🚩 Mark</div>
+      <div class="mark"></div>
+      <div class="count-tag big">← Most boats</div>
+      <div class="count-tag small">A few →</div>
+      <div class="startline"></div>
+      <div class="startpin" style="left:9%;"></div>
+      <div class="startpin" style="right:9%;"></div>
+      <div class="sb" style="left:40%;animation:splitL1 7s ease-in-out infinite;"><svg width="24" height="32" viewBox="0 0 30 40" class="rot-left"><path d="M15 2 C21 12 21 28 15 38 C9 28 9 12 15 2 Z" fill="#f2ede0" stroke="#c9c2b0" stroke-width="1.2"/><path d="M15 9 Q23 20 15 32" fill="none" stroke="#0d6ea8" stroke-width="3" stroke-linecap="round"/></svg></div>
+      <div class="sb" style="left:46%;animation:splitL2 7s ease-in-out infinite;animation-delay:-.5s;"><svg width="24" height="32" viewBox="0 0 30 40" class="rot-left"><path d="M15 2 C21 12 21 28 15 38 C9 28 9 12 15 2 Z" fill="#f2ede0" stroke="#c9c2b0" stroke-width="1.2"/><path d="M15 9 Q23 20 15 32" fill="none" stroke="#0d6ea8" stroke-width="3" stroke-linecap="round"/></svg></div>
+      <div class="sb" style="left:37%;animation:splitL3 7s ease-in-out infinite;animation-delay:-1s;"><svg width="24" height="32" viewBox="0 0 30 40" class="rot-left"><path d="M15 2 C21 12 21 28 15 38 C9 28 9 12 15 2 Z" fill="#f2ede0" stroke="#c9c2b0" stroke-width="1.2"/><path d="M15 9 Q23 20 15 32" fill="none" stroke="#0d6ea8" stroke-width="3" stroke-linecap="round"/></svg></div>
+      <div class="sb" style="left:49%;animation:splitL1 7s ease-in-out infinite;animation-delay:-1.5s;"><svg width="24" height="32" viewBox="0 0 30 40" class="rot-left"><path d="M15 2 C21 12 21 28 15 38 C9 28 9 12 15 2 Z" fill="#f2ede0" stroke="#c9c2b0" stroke-width="1.2"/><path d="M15 9 Q23 20 15 32" fill="none" stroke="#0d6ea8" stroke-width="3" stroke-linecap="round"/></svg></div>
+      <div class="sb" style="left:43%;animation:splitL3 7s ease-in-out infinite;animation-delay:-2s;"><svg width="24" height="32" viewBox="0 0 30 40" class="rot-left"><path d="M15 2 C21 12 21 28 15 38 C9 28 9 12 15 2 Z" fill="#f2ede0" stroke="#c9c2b0" stroke-width="1.2"/><path d="M15 9 Q23 20 15 32" fill="none" stroke="#0d6ea8" stroke-width="3" stroke-linecap="round"/></svg></div>
+      <div class="sb" style="left:56%;animation:splitR1 7s ease-in-out infinite;animation-delay:-.3s;"><svg width="24" height="32" viewBox="0 0 30 40" class="rot-right"><path d="M15 2 C21 12 21 28 15 38 C9 28 9 12 15 2 Z" fill="#f2ede0" stroke="#c9c2b0" stroke-width="1.2"/><path d="M15 9 Q23 20 15 32" fill="none" stroke="#0d6ea8" stroke-width="3" stroke-linecap="round"/></svg></div>
+      <div class="sb" style="left:60%;animation:splitR2 7s ease-in-out infinite;animation-delay:-1.2s;"><svg width="24" height="32" viewBox="0 0 30 40" class="rot-right"><path d="M15 2 C21 12 21 28 15 38 C9 28 9 12 15 2 Z" fill="#f2ede0" stroke="#c9c2b0" stroke-width="1.2"/><path d="M15 9 Q23 20 15 32" fill="none" stroke="#0d6ea8" stroke-width="3" stroke-linecap="round"/></svg></div>
+    </div>
+    <p class="sub">Right after the start the fleet splits left and right. When <strong>most boats commit to one side</strong>, that's a clue it may be paying — but read the wind yourself before you follow the crowd.</p>
+    <div class="hint">↓</div>
+  </section>
+
+  <!-- 6. CLEAN AIR -->
+  <section class="slide s-deep">
+    <div class="eyebrow">The boats change the wind too</div>
+    <h2 style="font-size:clamp(1.6rem,5vw,2.6rem);">Find <strong>clean air</strong></h2>
+    <div class="course">
+      <div class="windflag tl">
+        <svg width="30" height="52" viewBox="0 0 30 52"><line x1="15" y1="4" x2="15" y2="38" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M5 34 L15 50 L25 34 Z" fill="#fff"/></svg>
+        <span>WIND</span>
+      </div>
+      <svg viewBox="0 0 560 380" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="display:block;">
+        <defs>
+          <g id="oboat">
+            <path d="M0,-11 C4,-5 4,5 0,11 C-4,5 -4,-5 0,-11 Z" fill="#f2ede0" stroke="#c9c2b0" stroke-width="1"/>
+            <path d="M0,-6 Q5,0 0,6" fill="none" stroke="#0d6ea8" stroke-width="2.2" stroke-linecap="round"/>
+          </g>
+          <marker id="escArrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#fff"/></marker>
+        </defs>
+        <path d="M175,188 L282,188 L330,350 L138,350 Z" fill="rgba(150,158,166,.32)"/>
+        <path d="M362,278 L438,278 L458,350 L342,350 Z" fill="rgba(150,158,166,.18)"/>
+        <g stroke="#d2d6da" stroke-width="3" stroke-linecap="round">
+          <line x1="196" y1="230" x2="220" y2="230"><animate attributeName="opacity" values=".3;.85;.3" dur="1.6s" repeatCount="indefinite"/></line>
+          <line x1="224" y1="270" x2="250" y2="270"><animate attributeName="opacity" values=".3;.85;.3" dur="1.8s" begin="-.6s" repeatCount="indefinite"/></line>
+          <line x1="205" y1="312" x2="231" y2="312"><animate attributeName="opacity" values=".3;.85;.3" dur="1.5s" begin="-1s" repeatCount="indefinite"/></line>
+        </g>
+        <use href="#oboat" transform="translate(178,120) rotate(45) scale(1.25)"/>
+        <use href="#oboat" transform="translate(208,112) rotate(45) scale(1.25)"/>
+        <use href="#oboat" transform="translate(198,152) rotate(45) scale(1.25)"/>
+        <use href="#oboat" transform="translate(232,142) rotate(45) scale(1.25)"/>
+        <use href="#oboat" transform="translate(256,120) rotate(45) scale(1.25)"/>
+        <use href="#oboat" transform="translate(224,178) rotate(45) scale(1.25)"/>
+        <use href="#oboat" transform="translate(368,255) rotate(45) scale(1.2)"/>
+        <use href="#oboat" transform="translate(402,272) rotate(45) scale(1.2)"/>
+        <use href="#oboat" transform="translate(432,242) rotate(45) scale(1.2)"/>
+        <path d="M235,300 C275,286 335,268 378,238 C420,208 458,188 478,150" fill="none" stroke="#fff" stroke-width="2.6" stroke-dasharray="7 7" marker-end="url(#escArrow)" opacity=".85"><animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.1s" repeatCount="indefinite"/></path>
+        <g>
+          <rect x="142" y="326" width="140" height="21" rx="10.5" fill="#ff6b57"/>
+          <text x="212" y="341" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="12.5" fill="#fff">Dirty air · slow</text>
+        </g>
+        <g>
+          <rect x="391" y="108" width="128" height="21" rx="10.5" fill="#39c47e"/>
+          <text x="455" y="123" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="12.5" fill="#063b63">Clean air · fast</text>
+        </g>
+        <g opacity="0">
+          <path d="M12,0 C6,-4 -8,-5 -12,0 C-8,5 6,4 12,0 Z" fill="#fff" stroke="#c9c2b0" stroke-width="1"/>
+          <path d="M4,0 Q-4,6 -8,2" fill="none" stroke="#ff6b57" stroke-width="2.6" stroke-linecap="round"><animate attributeName="stroke" values="#ff6b57;#ff6b57;#2fae6f;#2fae6f" keyTimes="0;0.6;0.75;1" dur="6s" repeatCount="indefinite"/></path>
+          <animateMotion dur="6s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;0.30;1" keyTimes="0;0.55;1" path="M235,300 C275,286 335,268 378,238 C420,208 458,188 478,150"/>
+          <animate attributeName="opacity" values="0;1;1;1;0" keyTimes="0;0.06;0.5;0.93;1" dur="6s" repeatCount="indefinite"/>
+        </g>
+      </svg>
+    </div>
+    <p class="sub">A <strong>pack of boats</strong> leaves a big patch of messy, slow wind behind it. Stuck in that <strong style="color:#ff6b57;">dirty air</strong>? Steer out to the <strong>side</strong> and follow the path into <strong style="color:#39c47e;">clean air</strong> — then speed away.</p>
+    <div class="hint">↓</div>
+  </section>
+
+  <!-- 6. THE SCAN -->
+  <section class="slide s-deep">
+    <div class="eyebrow">Every 10–20 seconds</div>
+    <h2 style="font-size:clamp(1.6rem,5vw,2.6rem);">Take a photo with your <strong>eyes</strong></h2>
+    <div class="scanwrap">
+      <div class="scan-tag st-front">⬆️ Where's the mark?</div>
+      <div class="scan-tag st-right">➡️ More or less wind?</div>
+      <div class="scan-tag st-behind">⬇️ Boats gaining?</div>
+      <div class="scan-tag st-left">⬅️ More or less wind?</div>
+      <div class="scan-boat">🚤</div>
+      <div class="scan-eye"></div>
+    </div>
+    <p class="sub"><strong>2–3 seconds</strong>, then back to sailing fast. Scan — don't stare.</p>
+    <div class="hint">↓</div>
+  </section>
+
+  <!-- 7. THE LOOP -->
+  <section class="slide s-dusk">
+    <div class="eyebrow">Repeat all race long</div>
+    <h2 style="font-size:clamp(1.6rem,5vw,2.6rem);">The <strong>racing loop</strong></h2>
+    <div class="loop">
+      <svg class="loop-arrow" viewBox="0 0 150 150"><circle cx="75" cy="75" r="70"/></svg>
+      <div class="loop-node ln-top"><span class="li">🎯</span><span class="ln">Trim</span></div>
+      <div class="loop-node ln-right"><span class="li">👀</span><span class="ln">Look</span></div>
+      <div class="loop-node ln-bottom"><span class="li">🧠</span><span class="ln">Think</span></div>
+      <div class="loop-node ln-left"><span class="li">✅</span><span class="ln">Decide</span></div>
+    </div>
+    <p class="sub">Is my sail right? → What's around me? → What happens next? → Stay, tack, or go for speed.</p>
+    <div class="hint">↓</div>
+  </section>
+
+  <!-- 8. THE PAYOFF -->
+  <section class="slide s-green">
+    <div class="eyebrow">The reward</div>
+    <h2 style="font-size:clamp(1.7rem,5.5vw,3rem);">Tack early. Find the wind.<br><strong>Gain 5 boats.</strong> 🎉</h2>
+    <p class="sub" style="font-size:clamp(1.2rem,3.2vw,1.8rem);"><strong>Fast boat + smart eyes = good racing.</strong></p>
+    <div class="waves"><svg viewBox="0 0 1200 120" preserveAspectRatio="none"><path class="wave1" d="M0,40 C150,90 350,0 600,40 C850,80 1050,10 1200,40 L1200,120 L0,120 Z"/></svg></div>
+    <div class="hint">↓</div>
+  </section>
+
+  <!-- 9. FOOTBALL ANALOGY -->
+  <section class="slide s-deep">
+    <div class="eyebrow">Same as football ⚽</div>
+    <h2 style="font-size:clamp(1.5rem,4.6vw,2.4rem);">A great player doesn't just watch the <strong>ball</strong></h2>
+    <div class="pitch">
+      <div class="line mid"></div>
+      <div class="line circle"></div>
+      <div class="ball">⚽</div>
+      <div class="player p1">🏃</div>
+      <div class="player p2">🙌</div>
+    </div>
+    <p class="sub">They see teammates, space, and where the game is moving. A beginner sailor watches only the boat — a <strong>racer</strong> watches the whole game.</p>
+    <div class="hint">↓</div>
+  </section>
+
+  <!-- 10. MANTRA -->
+  <section class="slide s-sun">
+    <div class="eyebrow">Say it before every race</div>
+    <div class="mantra"><span>Eyes up.</span> <span>Boat fast.</span> <span>Brain on.</span></div>
+    <p class="sub" style="font-size:clamp(1.1rem,3vw,1.6rem);color:#063b63;">Or shorter: <strong>Don't just sail the boat — sail the course.</strong></p>
+    <div class="hint" style="color:#063b63;">↓ One more thing</div>
+  </section>
+
+  <!-- 11. TAKEAWAY CHECKLIST -->
+  <section class="slide s-dusk">
+    <div class="eyebrow">Your on-the-water checklist</div>
+    <h2 style="font-size:clamp(1.5rem,4.6vw,2.4rem);">Do this every lap</h2>
+    <div class="check">
+      <div class="item"><span class="n">1</span><span>Sail <strong>fast</strong> — trim, balance, steer well first.</span></div>
+      <div class="item"><span class="n">2</span><span>Every ~15s, <strong>look up</strong> — a quick 2–3 second scan.</span></div>
+      <div class="item"><span class="n">3</span><span>Ask: where's the <strong>better wind</strong>? Where's the fleet going?</span></div>
+      <div class="item"><span class="n">4</span><span><strong>Decide</strong> — then get your head back in and sail fast again.</span></div>
+    </div>
+    <p class="sub" style="font-size:clamp(1.1rem,2.8vw,1.5rem);">🛰️ Be the drone. Then be the driver. 🚤</p>
+  </section>
+
+</div>
+</body>
+</html>

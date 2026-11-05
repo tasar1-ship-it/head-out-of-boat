@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fly up like a drone — draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#bfe9ff; --sky2:#7ecbf0;
+    --sea:#0d6ea8; --sea-deep:#063b63; --dark:#052f4d;
+    --sun:#ffd23f; --coral:#ff6b57; --foam:#fdfcf7; --green:#39c47e; --cyan:#39a7d6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2vh;
+    background:#04223a;font-family:'Nunito',sans-serif;color:var(--foam);padding:1.5vh 2vw;overflow:hidden;}
+  .tag{font-family:'Fredoka',sans-serif;font-weight:600;letter-spacing:.16em;text-transform:uppercase;font-size:.7rem;opacity:.55;}
+  .frame{position:relative;width:min(96vw, calc(80vh * 16 / 11));aspect-ratio:16 / 11;border-radius:20px;overflow:hidden;
+    background:linear-gradient(180deg,var(--sky) 0%,var(--sky2) 24%,var(--sea) 60%,var(--sea-deep) 100%);
+    box-shadow:0 20px 60px rgba(0,0,0,.45);}
+  .layer{position:absolute;inset:0;}
+  .layer svg{width:100%;height:100%;display:block;}
+
+  /* ---- master 22s timeline (scene 2 holds ~15s) ---- */
+  .ground{animation:groundCam 22s ease-in-out infinite;transform-origin:50% 78%;}
+  @keyframes groundCam{
+    0%{opacity:0;transform:scale(1.06) translateY(0);}
+    3%{opacity:1;transform:scale(1) translateY(0);}
+    18%{opacity:1;transform:scale(1) translateY(0);}
+    27%{opacity:0;transform:scale(.4) translateY(-90px);}
+    100%{opacity:0;transform:scale(.4) translateY(-90px);}
+  }
+  .aerial{animation:aerialCam 22s ease-in-out infinite;transform-origin:50% 50%;}
+  @keyframes aerialCam{
+    0%,22%{opacity:0;transform:scale(1.18);}
+    30%{opacity:1;transform:scale(1);}
+    95%{opacity:1;transform:scale(1);}
+    100%{opacity:0;transform:scale(1);}
+  }
+  .boy{position:absolute;inset:0;pointer-events:none;}
+  .boy-anchor{position:absolute;left:50%;width:23%;transform:translateX(-50%);animation:boyRise 22s ease-in-out infinite;}
+  .boy-anchor svg{width:100%;height:auto;display:block;}
+  @keyframes boyRise{
+    0%,14%{opacity:0;top:70%;}
+    22%{opacity:1;top:56%;}
+    30%{opacity:1;top:12%;}
+    95%{opacity:1;top:12%;}
+    100%{opacity:0;top:12%;}
+  }
+  .boy-bob{animation:boyBob 2.4s ease-in-out infinite;}
+  @keyframes boyBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-5%);}}
+  .boy-spin{animation:boySpin 22s linear infinite;transform-origin:center;}
+  @keyframes boySpin{
+    0%,30%{transform:scaleX(1);}
+    38%{transform:scaleX(.04);}
+    46%{transform:scaleX(-1);}
+    54%{transform:scaleX(.04);}
+    61%{transform:scaleX(1);}
+    69%{transform:scaleX(.04);}
+    77%{transform:scaleX(-1);}
+    85%{transform:scaleX(.04);}
+    92%,100%{transform:scaleX(1);}
+  }
+
+  .whoosh{animation:whooshGate 22s ease-in-out infinite;opacity:0;}
+  @keyframes whooshGate{0%,15%{opacity:0;}22%{opacity:1;}28%{opacity:0;}100%{opacity:0;}}
+  .streak{position:absolute;width:3px;border-radius:3px;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.75));animation:streakUp 1s linear infinite;}
+  @keyframes streakUp{0%{transform:translateY(60px);opacity:0;}30%{opacity:1;}100%{transform:translateY(-160px);opacity:0;}}
+
+  .caps{position:absolute;left:0;right:0;bottom:0;height:30%;pointer-events:none;
+    background:linear-gradient(0deg, rgba(4,34,58,.92) 22%, rgba(4,34,58,0));}
+  .cap{position:absolute;left:0;right:0;bottom:22%;text-align:center;
+    font-family:'Fredoka',sans-serif;font-weight:600;
+    font-size:clamp(.95rem,3vw,1.5rem);padding:0 7%;opacity:0;line-height:1.2;}
+  .cap b{color:var(--sun);}
+  .cap1{animation:cap1 22s ease-in-out infinite;}
+  .cap2{animation:cap2 22s ease-in-out infinite;}
+  .cap3{animation:cap3 22s ease-in-out infinite;}
+  @keyframes cap1{0%{opacity:0;}3%{opacity:1;}15%{opacity:1;}19%{opacity:0;}100%{opacity:0;}}
+  @keyframes cap2{0%,19%{opacity:0;}24%{opacity:1;}28%{opacity:1;}32%{opacity:0;}100%{opacity:0;}}
+  @keyframes cap3{0%,33%{opacity:0;}38%{opacity:1;}92%{opacity:1;}96%{opacity:0;}100%{opacity:0;}}
+</style>
+</head>
+<body>
+  <div class="tag">Draft · concept animation</div>
+  <div class="frame">
+
+    <!-- ============ GROUND: in the boat, low view ============ -->
+    <div class="layer ground">
+      <svg viewBox="0 0 640 440" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cdeeff"/><stop offset="1" stop-color="#9ed7f2"/></linearGradient>
+          <linearGradient id="gSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b8fc4"/><stop offset="1" stop-color="#0a5f92"/></linearGradient>
+          <!-- close-hauled Optimist, side view, sail sheeted tight -->
+          <g id="ch">
+            <path d="M-14,6 L14,6 L10,13 L-10,13 Z" fill="#f2ede0" stroke="#d9d2c2" stroke-width=".8"/>
+            <line x1="-2" y1="6" x2="2" y2="-24" stroke="#222" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M2,-23 L11,-18 L8,4 L-1,5 Z" fill="#fdfdfb" stroke="#d8d2c2" stroke-width=".8"/>
+            <line x1="-1" y1="5" x2="9" y2="4" stroke="#333" stroke-width="1.4"/>
+            <circle cx="-6" cy="1" r="2.6" fill="#2f6fd0"/>
+          </g>
+        </defs>
+        <rect x="0" y="0" width="640" height="118" fill="url(#gSky)"/>
+        <rect x="0" y="118" width="640" height="322" fill="url(#gSea)"/>
+        <!-- darker water = more wind, off to the left -->
+        <path d="M40,150 Q150,132 268,158 Q300,205 250,262 Q140,285 52,250 Q20,200 40,150 Z" fill="#052f4d" opacity=".85"/>
+        <g stroke="#0d6ea8" stroke-width="3" stroke-linecap="round" opacity=".8">
+          <line x1="80" y1="180" x2="110" y2="180"><animate attributeName="opacity" values=".3;.9;.3" dur="2s" repeatCount="indefinite"/></line>
+          <line x1="120" y1="212" x2="152" y2="212"><animate attributeName="opacity" values=".3;.9;.3" dur="2.4s" begin="-.7s" repeatCount="indefinite"/></line>
+          <line x1="70" y1="238" x2="100" y2="238"><animate attributeName="opacity" values=".3;.9;.3" dur="1.8s" begin="-1.1s" repeatCount="indefinite"/></line>
+        </g>
+        <!-- nearby boats beating at 45, sails tight, heeled -->
+        <use href="#ch" transform="translate(180,205) rotate(-10) scale(2.4)"/>
+        <use href="#ch" transform="translate(268,182) rotate(-10) scale(1.9)"/>
+        <use href="#ch" transform="translate(388,196) rotate(-10) scale(2.2)"/>
+        <use href="#ch" transform="translate(468,176) rotate(-10) scale(1.7)"/>
+        <use href="#ch" transform="translate(330,152) rotate(-10) scale(1.3)"/>
+        <use href="#ch" transform="translate(120,168) rotate(-10) scale(1.5)"/>
+        <use href="#ch" transform="translate(508,222) rotate(-10) scale(2.6)"/>
+        <!-- foreground: our boy in a real Optimist, seen from behind -->
+        <g transform="translate(322,352)">
+          <path d="M-106,60 Q0,88 106,60 Q60,78 0,80 Q-60,78 -106,60 Z" fill="#fff" opacity=".45"/>
+          <path d="M-92,14 L92,14 L76,50 L-76,50 Z" fill="#e6e9ed" stroke="#c1c6cc" stroke-width="1.5"/>
+          <path d="M-92,14 L-46,-64 L46,-64 L92,14 Z" fill="#f6f6f1" stroke="#c6cacf" stroke-width="2"/>
+          <path d="M-92,14 L92,14" stroke="#2f6fd0" stroke-width="3.5"/>
+          <path d="M-46,-64 L46,-64 L41,-56 L-41,-56 Z" fill="#dfe3e7" stroke="#c6cacf" stroke-width="1"/>
+          <path d="M-66,8 L-34,-48 L34,-48 L66,8 Z" fill="#37424f"/>
+          <path d="M-50,4 L-29,-38 L29,-38 L50,4 Z" fill="#c9b483" opacity=".55"/>
+          <rect x="-4" y="-30" width="8" height="26" rx="2" fill="#8a7645"/>
+          <line x1="0" y1="-46" x2="3" y2="-234" stroke="#222" stroke-width="5" stroke-linecap="round"/>
+          <path d="M3,-232 L-38,-212 L-48,-56 L4,-48 Z" fill="#fdfdfb" stroke="#dcdcd4" stroke-width="2"/>
+          <line x1="4" y1="-50" x2="-48" y2="-56" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+          <line x1="0" y1="-104" x2="-38" y2="-212" stroke="#444" stroke-width="2.2"/>
+          <g stroke="#cfcfc7" stroke-width="2">
+            <line x1="-28" y1="-76" x2="-44" y2="-73"/>
+            <line x1="-24" y1="-124" x2="-40" y2="-121"/>
+            <line x1="-20" y1="-170" x2="-35" y2="-169"/>
+          </g>
+          <circle cx="-14" cy="-146" r="13" fill="none" stroke="#2b3138" stroke-width="3"/>
+          <line x1="-14" y1="-159" x2="-14" y2="-146" stroke="#2b3138" stroke-width="3"/>
+          <g transform="translate(-4,-98)"><g><path d="M0,0 Q-9,-2 -18,1" stroke="#ff3b30" stroke-width="2.2" fill="none" stroke-linecap="round"/><animateTransform attributeName="transform" type="rotate" values="-9;8;-9" dur=".8s" repeatCount="indefinite"/></g></g>
+          <g transform="translate(-6,-146)"><g><path d="M0,0 Q-9,-2 -18,1" stroke="#ff3b30" stroke-width="2.2" fill="none" stroke-linecap="round"/><animateTransform attributeName="transform" type="rotate" values="7;-9;7" dur=".95s" repeatCount="indefinite"/></g></g>
+          <line x1="-22" y1="-52" x2="16" y2="-14" stroke="#8a8f96" stroke-width="1.6"/>
+          <g transform="translate(30,-8)">
+            <line x1="-6" y1="0" x2="-16" y2="-14" stroke="#f0c08a" stroke-width="6" stroke-linecap="round"/>
+            <rect x="-18" y="-22" width="36" height="40" rx="12" fill="#2f6fd0" stroke="#255aad" stroke-width="2"/>
+            <line x1="0" y1="-20" x2="0" y2="16" stroke="#255aad" stroke-width="2"/>
+            <g transform="rotate(-16)">
+              <circle cx="-4" cy="-36" r="14" fill="#f0c08a"/>
+              <path d="M-18,-38 Q-17,-52 -4,-53 Q9,-52 10,-40 Q3,-47 -4,-47 Q-12,-46 -18,-38 Z" fill="#7a5a34"/>
+              <path d="M-15,-32 q2.5,2.5 5,0" stroke="#333" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+            </g>
+          </g>
+        </g>
+        <text x="150" y="150" font-family="Fredoka,sans-serif" font-size="20" fill="#fdfcf7" opacity=".5">?</text>
+      </svg>
+    </div>
+
+    <!-- ============ AERIAL: drone's-eye view of the fleet ============ -->
+    <div class="layer aerial">
+      <svg viewBox="0 0 640 440" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="aSea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a5f92"/><stop offset="1" stop-color="#063b63"/></linearGradient>
+          <g id="tb"><path d="M0,-9 C3,-4 3,4 0,9 C-3,4 -3,-4 0,-9 Z" fill="#f2ede0" stroke="#c9c2b0" stroke-width="1"/><path d="M0,-5 Q4,0 0,5" fill="none" stroke="#0d6ea8" stroke-width="2" stroke-linecap="round"/></g>
+          <g id="tby"><path d="M0,-9 C3,-4 3,4 0,9 C-3,4 -3,-4 0,-9 Z" fill="#ffd23f" stroke="#d69e2e" stroke-width="1.2"/><path d="M0,-5 Q4,0 0,5" fill="none" stroke="#8a6d1a" stroke-width="2" stroke-linecap="round"/></g>
+          <marker id="wArr" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="7" markerHeight="7" orient="auto"><path d="M5,10 L0,2 L10,2 Z" fill="#fff"/></marker>
+        </defs>
+        <rect x="0" y="0" width="640" height="440" fill="url(#aSea)"/>
+        <!-- big darker wind patch, now clearly visible on the left -->
+        <path d="M20,40 Q220,20 300,90 Q330,240 250,380 Q120,420 30,360 Q0,200 20,40 Z" fill="#052f4d" opacity=".9"/>
+        <g stroke="#39a7d6" stroke-width="3.5" stroke-linecap="round">
+          <line x1="70" y1="120" x2="108" y2="120"><animate attributeName="opacity" values=".3;.95;.3" dur="2s" repeatCount="indefinite"/></line>
+          <line x1="120" y1="170" x2="160" y2="170"><animate attributeName="opacity" values=".3;.95;.3" dur="2.3s" begin="-.6s" repeatCount="indefinite"/></line>
+          <line x1="80" y1="220" x2="118" y2="220"><animate attributeName="opacity" values=".3;.95;.3" dur="1.9s" begin="-1s" repeatCount="indefinite"/></line>
+          <line x1="130" y1="272" x2="168" y2="272"><animate attributeName="opacity" values=".3;.95;.3" dur="2.2s" begin="-1.4s" repeatCount="indefinite"/></line>
+        </g>
+        <g><rect x="52" y="58" width="158" height="26" rx="13" fill="#39c47e"/><text x="131" y="76" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="14" fill="#063b63">More wind · good</text></g>
+        <!-- wind arrow from top -->
+        <g transform="translate(592,44)">
+          <text x="0" y="-9" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="13" fill="#fff" letter-spacing="2">WIND</text>
+          <line x1="0" y1="0" x2="0" y2="30" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+          <path d="M-10,25 L0,46 L10,25 Z" fill="#fff"/>
+        </g>
+        <!-- marks -->
+        <circle cx="360" cy="70" r="9" fill="#ff6b57" stroke="#fff" stroke-width="2.5"/>
+        <circle cx="470" cy="330" r="9" fill="#ff6b57" stroke="#fff" stroke-width="2.5"/>
+        <!-- LEFT: fleet working the windy side, boats on BOTH tacks (criss-crossing) -->
+        <use href="#tb" transform="translate(150,300) rotate(-45) scale(1.5)"/>
+        <use href="#tb" transform="translate(192,250) rotate(45) scale(1.5)"/>
+        <use href="#tb" transform="translate(228,318) rotate(-45) scale(1.5)"/>
+        <use href="#tb" transform="translate(206,192) rotate(45) scale(1.5)"/>
+        <use href="#tb" transform="translate(262,262) rotate(-45) scale(1.5)"/>
+        <use href="#tb" transform="translate(174,360) rotate(45) scale(1.5)"/>
+        <use href="#tb" transform="translate(300,214) rotate(-45) scale(1.5)"/>
+        <use href="#tb" transform="translate(256,150) rotate(45) scale(1.5)"/>
+        <!-- RIGHT, around / below the boy: sailing correctly at 45 -->
+        <use href="#tb" transform="translate(452,250) rotate(45) scale(1.4)"/>
+        <use href="#tb" transform="translate(498,300) rotate(45) scale(1.4)"/>
+        <use href="#tb" transform="translate(432,335) rotate(45) scale(1.4)"/>
+        <use href="#tb" transform="translate(490,220) rotate(45) scale(1.4)"/>
+        <!-- RIGHT & AHEAD (near the mark): headed, forced down to ~70 (bad) -->
+        <use href="#tby" transform="translate(430,155) rotate(70) scale(1.4)"/>
+        <use href="#tby" transform="translate(478,178) rotate(70) scale(1.4)"/>
+        <!-- header: wind bends right ahead, knocking the lead boats -->
+        <path d="M556,58 Q586,84 562,116" fill="none" stroke="#ff6b57" stroke-width="3" stroke-dasharray="4 5"/>
+        <path d="M555,107 L562,121 L571,109 Z" fill="#ff6b57"/>
+        <g><rect x="406" y="90" width="128" height="26" rx="13" fill="#ff6b57"/><text x="470" y="108" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="14" fill="#fff">Header · bad</text></g>
+      </svg>
+    </div>
+
+    <!-- ============ WHOOSH during lift ============ -->
+    <div class="layer whoosh">
+      <span class="streak" style="left:30%;height:46px;animation-delay:0s;"></span>
+      <span class="streak" style="left:44%;height:60px;animation-delay:-.25s;"></span>
+      <span class="streak" style="left:56%;height:40px;animation-delay:-.5s;"></span>
+      <span class="streak" style="left:66%;height:54px;animation-delay:-.15s;"></span>
+      <span class="streak" style="left:38%;height:36px;animation-delay:-.7s;"></span>
+    </div>
+
+    <!-- ============ THE BOY, flying ============ -->
+    <div class="boy">
+      <div class="boy-anchor"><div class="boy-bob"><div class="boy-spin">
+        <svg viewBox="-64 -64 128 128" style="width:100%;height:auto;display:block;">
+          <ellipse cx="0" cy="50" rx="28" ry="6" fill="#000" opacity=".14"/>
+          <path d="M0,-4 L-24,50 L24,50 Z" fill="#ffd23f" opacity=".22"/>
+          <line x1="-4" y1="-4" x2="-24" y2="50" stroke="#ffd23f" stroke-width="2" stroke-dasharray="3 5" opacity=".6"/>
+          <line x1="4" y1="-4" x2="24" y2="50" stroke="#ffd23f" stroke-width="2" stroke-dasharray="3 5" opacity=".6"/>
+          <line x1="-8" y1="18" x2="-12" y2="40" stroke="#2b4a6b" stroke-width="8" stroke-linecap="round"/>
+          <line x1="8" y1="18" x2="12" y2="40" stroke="#2b4a6b" stroke-width="8" stroke-linecap="round"/>
+          <line x1="-14" y1="-2" x2="-46" y2="-16" stroke="#f0c08a" stroke-width="8" stroke-linecap="round"/>
+          <line x1="14" y1="-2" x2="46" y2="-16" stroke="#f0c08a" stroke-width="8" stroke-linecap="round"/>
+          <g transform="translate(-48,-18)"><ellipse rx="13" ry="3" fill="#39a7d6" opacity=".85"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur=".22s" repeatCount="indefinite"/></ellipse></g>
+          <g transform="translate(48,-18)"><ellipse rx="13" ry="3" fill="#39a7d6" opacity=".85"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur=".22s" repeatCount="indefinite"/></ellipse></g>
+          <rect x="-17" y="-10" width="34" height="32" rx="10" fill="#2f6fd0" stroke="#255aad" stroke-width="2"/>
+          <line x1="0" y1="-8" x2="0" y2="20" stroke="#255aad" stroke-width="2"/>
+          <circle cx="0" cy="-22" r="14" fill="#f0c08a"/>
+          <path d="M-14,-20 Q-14,-36 0,-37 Q14,-36 14,-20 Q8,-26 0,-27 Q-8,-26 -14,-20 Z" fill="#6b4a26"/>
+          <path d="M-7,-15 q3,3 6,0" stroke="#333" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M1,-15 q3,3 6,0" stroke="#333" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div></div></div>
+    </div>
+
+    <!-- ============ captions ============ -->
+    <div class="caps">
+      <div class="cap cap1">In the boat, you only see what's <b>close</b>.</div>
+      <div class="cap cap2">Fly up like a <b>drone</b>…</div>
+      <div class="cap cap3">…and you see the <b>whole race</b> — and where the wind is.</div>
+    </div>
+
+  </div>
+  <div class="tag">Loops automatically · ~10s</div>
+</body>
+</html>
